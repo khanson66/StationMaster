@@ -1,4 +1,4 @@
-mod cmd;
+mod sessions;
 
 use std::io::Write;
 use std::process::exit;
@@ -19,6 +19,15 @@ fn prompt(name:&str) -> (String, Vec<String>) {
     return (command, args )
 }
 
+fn test_command(args:Vec<String>){
+    if args.is_empty() {
+        println!("NO ARGS PROVIDED")
+    }else{
+        println!("{}",args.join(","));
+    }
+
+}
+
 fn main() {
     loop{
         //TODO: Add formatted time to prompt
@@ -34,6 +43,9 @@ fn main() {
             },
             "exit" =>{
                 exit(0);
+            },
+            "test" =>{
+              test_command(args);
             },
             _ =>{
                 println!("There is no such command");
