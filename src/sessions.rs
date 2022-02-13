@@ -1,14 +1,5 @@
-struct SSH{
-    hostname:String,
-    port:i32,
-    pid:i32
-}
-
-struct Netcat{
-    hostname: String,
-    port:i32,
-    pid:i32
-}
+mod ssh;
+mod netcat;
 
 trait SESSION {
     fn new(hostname:String, port:i32) -> Self;
@@ -16,7 +7,8 @@ trait SESSION {
     fn send_command(cmd:String) -> String;
 }
 
-impl SESSION for Netcat{
+//TODO: Research way to add impl to seprate files
+impl SESSION for netcat::Netcat{
     fn new(hostname: String, port: i32) -> Self {
         todo!()
     }
@@ -30,7 +22,7 @@ impl SESSION for Netcat{
     }
 }
 
-impl SESSION for SSH{
+impl SESSION for ssh::SSH{
     fn new(hostname: String, port: i32) -> Self {
         todo!()
     }
@@ -40,6 +32,25 @@ impl SESSION for SSH{
     }
 
     fn send_command(cmd: String) -> String {
+        todo!()
+    }
+}
+
+pub(crate) struct SessionHandler{
+    session_store: Box<dyn SESSION>,
+}
+
+impl SessionHandler{
+
+    pub fn new() -> Self{
+    }
+    //TODO: Create method to list all sessions
+    pub fn list(&self) -> String{
+        todo!()
+    }
+
+    //TODO: Create a method to create new session return bool
+    pub fn create(&mut self, SessionType:String) -> bool{
         todo!()
     }
 }

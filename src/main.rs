@@ -1,7 +1,9 @@
 mod sessions;
+mod cmd;
 
 use std::io::Write;
 use std::process::exit;
+use crate::cmd::help;
 
 fn prompt(name:&str) -> (String, Vec<String>) {
     let mut line = String::new();
@@ -29,6 +31,11 @@ fn test_command(args:Vec<String>){
 }
 
 fn main() {
+    //TODO: Implement Session Handler Object This object that will get passed to functions
+
+    println!("[!] Creating Session Handler ");
+    let handler = sessions::SessionHandler::new();
+
     loop{
         //TODO: Add formatted time to prompt
         let (command,args) = prompt("> ");
@@ -38,8 +45,7 @@ fn main() {
 
         match command.as_str() {
             "help" => {
-                // TODO: implement help function
-                println!("THIS IS THE HELP COMMAND")
+                cmd::help()
             },
             "exit" =>{
                 exit(0);
