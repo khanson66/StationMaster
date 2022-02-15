@@ -34,7 +34,7 @@ fn main() {
     //TODO: Implement Session Handler Object This object that will get passed to functions
 
     println!("[!] Creating Session Handler ");
-    let handler = sessions::SessionHandler::new();
+    // let handler = sessions::SessionHandler::new();
 
     loop{
         //TODO: Add formatted time to prompt

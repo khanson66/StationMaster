@@ -1,48 +1,58 @@
 mod ssh;
 mod netcat;
 
-trait SESSION {
-    fn new(hostname:String, port:i32) -> Self;
+trait base_session{
+ //   fn new(hostname:String, port:i32) -> Self;
     fn close(&self);
-    fn send_command(cmd:String) -> String;
+    fn send_command(&self, cmd:String) -> String;
 }
-
+#[warn(dead_code)]
 //TODO: Research way to add impl to seprate files
-impl SESSION for netcat::Netcat{
-    fn new(hostname: String, port: i32) -> Self {
-        todo!()
-    }
+impl base_session for netcat::Netcat{
+    // fn new(hostname: String, port: i32) -> Self {
+    //     todo!()
+    // }
 
     fn close(&self) {
         todo!()
     }
 
-    fn send_command(cmd: String) -> String {
+    fn send_command(&self, cmd: String) -> String {
         todo!()
     }
 }
-
-impl SESSION for ssh::SSH{
-    fn new(hostname: String, port: i32) -> Self {
+impl netcat::Netcat { 
+    fn new(hostname: String, port: i32) -> Self{
         todo!()
     }
+}
+impl base_session for ssh::SSH{
+    // fn new(hostname: String, port: i32) -> Self {
+    //     todo!()
+    // }
 
     fn close(&self) {
         todo!()
     }
 
-    fn send_command(cmd: String) -> String {
+    fn send_command(&self, cmd: String) -> String {
         todo!()
     }
 }
 
 pub(crate) struct SessionHandler{
-    session_store: Box<dyn SESSION>,
+    sessionhandler: Box<dyn base_session>
 }
+
+//pub struct SessionHandler; 
 
 impl SessionHandler{
 
-    pub fn new() -> Self{
+   fn new() -> Self{
+        // Self{
+        // sessionhandler: Box::new()
+        // }    
+        todo!()
     }
     //TODO: Create method to list all sessions
     pub fn list(&self) -> String{
