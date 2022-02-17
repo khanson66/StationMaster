@@ -1,9 +1,13 @@
 mod sessions;
 mod cmd;
+mod session_handler;
+use crate::sessions::SESSION;
 
 use std::io::Write;
 use std::process::exit;
 use crate::cmd::help;
+use crate::session_handler::SessionHandler;
+use crate::sessions::netcat::Netcat;
 
 fn prompt(name:&str) -> (String, Vec<String>) {
     let mut line = String::new();
@@ -34,7 +38,7 @@ fn main() {
     //TODO: Implement Session Handler Object This object that will get passed to functions
 
     println!("[!] Creating Session Handler ");
-    let handler = sessions::SessionHandler::new();
+    let handler: SessionHandler = session_handler::SessionHandler::new();
 
     loop{
         //TODO: Add formatted time to prompt
@@ -45,10 +49,13 @@ fn main() {
 
         match command.as_str() {
             "help" => {
-                cmd::help()
+                cmd::help();
             },
             "exit" =>{
                 exit(0);
+            },
+            "ls" => {
+              handler.list();
             },
             "test" =>{
               test_command(args);
