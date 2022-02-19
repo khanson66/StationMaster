@@ -57,6 +57,9 @@ fn main() {
             "ls" => {
               handler.list();
             },
+            "create" =>{
+              cmd::create(session_handler, args);
+            },
             "test" =>{
               test_command(args);
             },

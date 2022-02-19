@@ -1,4 +1,6 @@
 use std::fmt;
+use std::thread::current;
+use crate::SESSION;
 use crate::sessions::netcat::Netcat;
 use crate::sessions::ssh::SSH;
 
@@ -36,7 +38,19 @@ impl SessionHandler{
     }
 
     //TODO: Create a method to create new session return bool
-    pub fn create(&mut self, SessionType:String) -> bool{
-        todo!()
+    pub fn create(&mut self, Session:String, hostname:String, port:i32) -> bool{
+        match Session.to_lowercase().as_str(){
+            "ssh" => {
+                todo!()
+            }
+            "netcat" => {
+                self.curr_sessions.push(SessionTypes::Netcat(Netcat::new(hostname,port)));
+                return true;
+            }
+            _ =>{
+                println!("{} DOES NOT EXIST AS A SESSION TYPE", SessionType);
+                return false;
+            }
+        }
     }
 }
