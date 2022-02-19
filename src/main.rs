@@ -55,10 +55,10 @@ fn main() {
                 exit(0);
             },
             "ls" => {
-              handler.list();
+              handler.list_sessions();
             },
             "create" =>{
-              cmd::create(session_handler, args);
+             cmd::create(&handler, args);
             },
             "test" =>{
               test_command(args);
