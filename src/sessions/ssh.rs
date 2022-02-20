@@ -19,12 +19,12 @@ impl fmt::Display for SSH {
     }
 }
 
-impl SESSION for SSH{
+impl SSH{
     fn start(&self) {
         todo!()
     }
 
-    fn close(&self) {
+    fn close(&mut self) {
         todo!()
     }
 

@@ -2,22 +2,23 @@ use std::{fmt, io};
 use crate::sessions::SESSION;
 use std::{sync, thread, time};
 use std::fmt::Display;
+use std::fs::read;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::process::Command;
+use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 #[derive(Debug)]
 pub struct Netcat{
     port:u32,
-    pid:Option<thread::JoinHandle<()>>,
-    alive: sync::Arc<AtomicBool>,
+    handle:Option<thread::JoinHandle<()>>,
     name: String,
     description:String,
-    //TODO: Find a better way of implementing this
+    //TODO: Find a better way of implementing this. Does not feel right but might work
     tx_command: Sender<String>,
-    rx_command: Receiver<String>,
+    rx_command: Arc<Mutex<Receiver<String>>>,
 }
 
 impl Netcat {
@@ -26,18 +27,17 @@ impl Netcat {
         let (tx_command, rx_command) = channel();
         Netcat {
             port,
-            pid: None,
-            alive: sync::Arc::new(AtomicBool::new(false)),
+            handle: None,
             name,
             description: "Netcat connection".to_string(),
             tx_command,
-            rx_command,
+            rx_command: Arc::new(Mutex::new(rx_command)),
         }
     }
 
 
     //Starts listening to port selected
-    fn start_listener(&self, port:u32) -> io::Result<()>{
+    fn start_listener(&self, rx_command: Arc<Mutex<Receiver<String>>>, port:u32) -> io::Result<()>{
         let listener = std::net::TcpListener::bind(format!("{}:{}", "0.0.0.0", port))?;
         println!("Started listener on port {}", port);
 
@@ -49,7 +49,11 @@ impl Netcat {
 
         loop {
             //execution is paused until a command a string is sent
-            let readline = self.rx_command.recv();
+            let readline = rx_command.lock().unwrap().recv();
+            //TODO: Better solution for killing thread
+            if readline==Ok("<>_kill".to_string()) {
+             break;
+            }
             match readline {
                 Ok(command) => {
                     // Clone command to increase its lifetime
@@ -99,12 +103,16 @@ impl fmt::Display for Netcat {
 }
 
 impl SESSION for Netcat{
-    fn start(&self) {
-        self.start_listener(self.port);
+    fn start(&mut self) {
+        let t = Arc::clone(&self.rx_command);
+        self.handle = Some(thread::spawn(move|| {
+            self.start_listener(t, self.port);
+        }));
     }
 
-    fn close(&self) {
-        todo!()
+    //TODO: CLEANER CLOSE
+    fn close(&mut self) {
+        self.tx_command.send("<>_kill".to_string()).unwrap();
     }
 
     fn send_command(&self,cmd: String){
