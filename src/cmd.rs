@@ -15,7 +15,7 @@ pub fn help() {
     ")
 }
 
-pub(crate) fn create(session_handler:&SessionHandler, mut args:Vec<String>) {
+pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>) {
     // let sessionType = args.pop();
     let create_help  = "USAGE:
         create <OPTIONS>
@@ -55,20 +55,20 @@ pub(crate) fn create(session_handler:&SessionHandler, mut args:Vec<String>) {
             let netcat_usage = "USAGE:
             create -netcat -n <name> -p <port>";
             let mut name : String = "default".to_string(); 
-            let mut port: i32 = 9090;
+            let mut port: u32 = 9090;
             if args.len()< 3 {println!("{}", netcat_usage)}
             else if args[2].is_empty() | args[4].is_empty(){
                 println!("{}", netcat_usage)
             }else{
                 if args[1]=="-h"{
-                    name = args[2].to_lowercase();
+                    name = args[2].to_lowercase().to_string();
                 }else {println!("{}", netcat_usage)}
                 if args[3]=="-p"{
-                    port = args[4].parse::<i32>().unwrap();
+                    port = args[4].parse::<u32>().unwrap();
                 }else{println!("{}", netcat_usage)}
             }
             println!("name: {} & port: {}", name, port);
-           
+            let _out = session_handler.create("NETCAT".to_string(),name, port);
         },
         _ => {println!("{}",create_help)}
         }

@@ -28,11 +28,14 @@ impl SessionHandler{
 
     //TODO: Create method to list all sessions
     pub fn list_sessions(&self){
-        if self.curr_sessions.len() < 0 {
+        if self.curr_sessions.len() <= 0 {
             println!("There are no active sessions");
         }else{
             for i in  &self.curr_sessions{
-                println!("{:?}",i);
+                match i {
+                    SessionTypes::Netcat(s) => println!("{:?}", s.to_string()),
+                    _ => println!("WTF happened")
+                }
             }
         }
     }

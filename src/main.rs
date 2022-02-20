@@ -38,7 +38,7 @@ fn main() {
     //TODO: Implement Session Handler Object This object that will get passed to functions
 
     println!("[!] Creating Session Handler ");
-    let handler: SessionHandler = session_handler::SessionHandler::new();
+    let mut handler: SessionHandler = session_handler::SessionHandler::new();
 
     loop{
         //TODO: Add formatted time to prompt
@@ -58,7 +58,7 @@ fn main() {
               handler.list_sessions();
             },
             "create" =>{
-             cmd::create(&handler, args);
+             cmd::create(&mut handler, args);
             },
             "test" =>{
               test_command(args);
