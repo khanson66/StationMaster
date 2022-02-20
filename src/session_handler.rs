@@ -4,7 +4,7 @@ use crate::SESSION;
 use crate::sessions::netcat::Netcat;
 use crate::sessions::ssh::SSH;
 
-pub struct SessionHandler{
+pub(crate) struct SessionHandler{
         curr_sessions: Vec<SessionTypes>
 }
 
@@ -48,7 +48,7 @@ impl SessionHandler{
                 return true;
             }
             _ =>{
-                println!("{} DOES NOT EXIST AS A SESSION TYPE", Session);
+                println!("{} DOES NOT EXIST AS A SESSION TYPE", SessionType);
                 return false;
             }
         }
