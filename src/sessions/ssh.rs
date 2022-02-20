@@ -20,7 +20,7 @@ impl fmt::Display for SSH {
 }
 
 impl SESSION for SSH{
-    fn new(hostname: String, port: i32) -> Self {
+    fn start(&self) {
         todo!()
     }
 
@@ -28,7 +28,7 @@ impl SESSION for SSH{
         todo!()
     }
 
-    fn send_command(cmd: String) -> String {
+    fn send_command(&self, cmd: String) {
         todo!()
     }
 

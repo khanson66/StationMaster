@@ -38,8 +38,8 @@ impl SessionHandler{
     }
 
     //TODO: Create a method to create new session return bool
-    pub fn create(&mut self, Session:String, hostname:String, port:i32) -> bool{
-        match Session.to_lowercase().as_str(){
+    pub fn create(&mut self, session:String, hostname:String, port:u32) -> bool{
+        match session.to_lowercase().as_str(){
             "ssh" => {
                 todo!()
             }
@@ -48,7 +48,7 @@ impl SessionHandler{
                 return true;
             }
             _ =>{
-                println!("{} DOES NOT EXIST AS A SESSION TYPE", SessionType);
+                println!("{} DOES NOT EXIST AS A SESSION TYPE", session);
                 return false;
             }
         }
