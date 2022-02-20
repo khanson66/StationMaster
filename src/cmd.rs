@@ -15,7 +15,7 @@ pub fn help() {
     ")
 }
 
-pub fn create(session_handler:&SessionHandler, mut args:Vec<String>) {
+pub(crate) fn create(session_handler:&SessionHandler, mut args:Vec<String>) {
     // let sessionType = args.pop();
     let create_help  = "USAGE:
         create <OPTIONS>
