@@ -74,3 +74,8 @@ pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>)
         }
     }
 }
+
+//TODO: Add the ability to select specific session when multiple are coming in
+pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
+
+}

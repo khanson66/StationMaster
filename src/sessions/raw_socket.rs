@@ -5,28 +5,23 @@ use std::fmt::Display;
 use std::fs::read;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::process::Command;
-use std::sync::{Arc, Mutex};
-use std::sync::mpsc::{channel, Receiver, Sender};
+
 
 #[derive(Debug)]
-pub struct Netcat{
+pub struct RawSocket {
     port:u32,
-    handle:Option<thread::JoinHandle<()>>,
     name: String,
     description:String,
     stream: Option<TcpStream>
 }
 
-impl Netcat {
+impl RawSocket {
 
     pub(crate) fn new(name: String, port: u32) -> Self {
-        Netcat {
+        RawSocket {
             port,
-            handle: None,
             name,
-            description: "Netcat connection".to_string(),
+            description: "Raw Socket connection".to_string(),
             stream: None,
         }
     }
@@ -41,7 +36,7 @@ impl Netcat {
         let (mut stream, _) = listener.accept()?;
         println!("Connection received on {}, via NetCat from {}",port, stream.peer_addr().unwrap());
 
-        let _t = Netcat::pipe_thread(stream.try_clone().unwrap(), std::io::stdout());
+        let _t = RawSocket::pipe_thread(stream.try_clone().unwrap(), std::io::stdout());
         self.stream = Option::from(stream);
 
         return Ok(());
@@ -69,13 +64,13 @@ impl Netcat {
     }
 }
 
-impl fmt::Display for Netcat {
+impl fmt::Display for RawSocket {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Name: {}, host/port: {}:{}", self.name, "localhost",self.port)
     }
 }
 
-impl SESSION for Netcat{
+impl SESSION for RawSocket {
     fn start(&mut self) {
         self.start_listener(self.port);
     }
@@ -92,7 +87,7 @@ impl SESSION for Netcat{
             .expect("Failed to send TCP.");
     }
 
-    fn get_info() {
-        todo!()
+    fn get_name(&self) -> String {
+        return self.name.clone();
     }
 }

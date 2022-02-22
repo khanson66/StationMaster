@@ -1,24 +1,27 @@
-use std::fmt;
-use std::thread::current;
+use crate::sessions::raw_socket::RawSocket;
 use crate::SESSION;
-use crate::sessions::netcat::Netcat;
-use crate::sessions::ssh::SSH;
+use std::fmt;
+use std::fs::OpenOptions;
+use std::thread::current;
 
-pub(crate) struct SessionHandler{
-        curr_sessions: Vec<SessionTypes>
+pub(crate) struct SessionHandler {
+    sessions: Vec<SessionTypes>,
+    //NOTE: needed to simplify the duplicate check and positioning.
+    names: Vec<String>, //TODO: Find a way to remove this
+    active_session: Option<dyn SESSION>,
 }
 
 #[derive(Debug)]
-pub enum SessionTypes{
-    Netcat(Netcat),
-    SSH(SSH),
+pub enum SessionTypes {
+    RawSocket(RawSocket),
 }
 
-impl SessionHandler{
-    
+impl SessionHandler {
     pub fn new() -> SessionHandler {
-        SessionHandler{
-            curr_sessions: vec![]
+        SessionHandler {
+            sessions: vec![],
+            names: vec![],
+            active_session: None,
         }
     }
 
@@ -27,33 +30,57 @@ impl SessionHandler{
     }
 
     //TODO: Create method to list all sessions
-    pub fn list_sessions(&self){
-        if self.curr_sessions.len() <= 0 {
+    pub fn list_sessions(&self) {
+        if self.sessions.len() <= 0 && self.active_session == None {
             println!("There are no active sessions");
-        }else{
-            for i in  &self.curr_sessions{
+        } else {
+            if self.active_session != None{
+                println!("{}", self.active_session.as_ref().unwrap().get_name())
+            }
+            for i in &self.sessions {
                 match i {
-                    SessionTypes::Netcat(s) => println!("{:?}", s.to_string()),
-                    _ => println!("WTF happened")
+                    SessionTypes::RawSocket(s) => println!("{:?}", s.to_string()),
+                    _ => println!("WTF happened"),
                 }
             }
         }
     }
 
     //TODO: Create a method to create new session return bool
-    pub fn create(&mut self, session:String, hostname:String, port:u32) -> bool{
-        match session.to_lowercase().as_str(){
-            "ssh" => {
-                todo!()
+    pub fn create(&mut self, session: String, hostname: String, port: u32) -> bool {
+        return match session.to_lowercase().as_str() {
+            "MEME" => {
+                println!("OMEGALUL BRUV WTF YOU DOING?");
+                true
             }
             "netcat" => {
-                self.curr_sessions.push(SessionTypes::Netcat(Netcat::new(hostname,port)));
-                return true;
+
+                self.sessions
+                    .push(SessionTypes::RawSocket(RawSocket::new(hostname, port)));
+                true
             }
-            _ =>{
+            _ => {
                 println!("{} DOES NOT EXIST AS A SESSION TYPE", session);
-                return false;
+                false
+            }
+        };
+    }
+
+    pub fn set_active_session(&self, name: String) {
+        if self.sessions.len() <= 0 && self.active_session == None {
+            println!("There are no active sessions");
+        } else {
+            for i in &self.sessions {
+                match i {
+                    SessionTypes::RawSocket(s) => {
+                        if name == s.get_name(){
+
+                        }
+                    },
+                }
             }
         }
     }
+
+
 }

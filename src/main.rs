@@ -7,7 +7,7 @@ use std::io::Write;
 use std::process::exit;
 use crate::cmd::help;
 use crate::session_handler::SessionHandler;
-use crate::sessions::netcat::Netcat;
+use crate::sessions::raw_socket::RawSocket;
 
 fn prompt(name:&str) -> (String, Vec<String>) {
     let mut line = String::new();
@@ -55,13 +55,16 @@ fn main() {
                 exit(0);
             },
             "ls" => {
-              handler.list_sessions();
+                handler.list_sessions();
             },
+            "select" =>{
+
+            }
             "create" =>{
-             cmd::create(&mut handler, args);
+                cmd::create(&mut handler, args);
             },
             "test" =>{
-              test_command(args);
+                test_command(args);
             },
             _ =>{
                 println!("There is no such command");
