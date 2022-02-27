@@ -1,3 +1,5 @@
+// #![allow(unused_imports)]
+// #![allow(dead_code)]
 use std::{fmt, io};
 use crate::sessions::SESSION;
 use std::{sync, thread, time};
@@ -45,7 +47,6 @@ impl Netcat {
         self.stream = Option::from(stream);
 
         return Ok(());
-
     }
 
     //handle the web connection??
