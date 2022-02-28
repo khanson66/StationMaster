@@ -1,7 +1,7 @@
 // #![allow(unused_imports)]
 // #![allow(dead_code)]
 use crate::SessionHandler;
-
+mod utility;
 
 
 pub fn help() {
@@ -82,7 +82,11 @@ pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>)
                 port = args[2].parse::<u32>().unwrap();
             }
             //println!("name: {} & port: {}", name, port);
+            let used_port = utility::get_used_port();
+            if used_port.contains(&port){println!("please use a different port, port is being utilized")}
+            else {
             let _out = session_handler.create("netcat".to_string(),name, port);
+            }
         },
         _ => {println!("{}",create_help)}
         }
@@ -91,5 +95,5 @@ pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>)
 
 //TODO: Add the ability to select specific session when multiple are coming in
 pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
-
+    todo!()
 }

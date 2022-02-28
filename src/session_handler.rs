@@ -107,4 +107,9 @@ impl SessionHandler {
             }
         }
     }
+
+    pub(crate) fn drop(&self, name: String){
+        todo!();
+    }
+
 }
