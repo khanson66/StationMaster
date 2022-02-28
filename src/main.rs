@@ -5,9 +5,7 @@ use crate::sessions::SESSION;
 
 use std::io::Write;
 use std::process::exit;
-use crate::cmd::help;
 use crate::session_handler::SessionHandler;
-use crate::sessions::raw_socket::RawSocket;
 use std::collections::HashMap;
 
 fn prompt(name:&str) -> (String, Vec<String>) {

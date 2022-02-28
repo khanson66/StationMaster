@@ -2,11 +2,9 @@
 // #![allow(dead_code)]
 use std::{fmt, io};
 use crate::sessions::SESSION;
-use std::{sync, thread, time};
 use std::fmt::Display;
-use std::fs::read;
-use std::io::{Read, Write};
-use std::net::{Shutdown, TcpListener, TcpStream};
+use std::io::Write;
+use std::net::TcpStream;
 
 
 #[derive(Debug)]
@@ -65,7 +63,7 @@ impl RawSocket {
     }
 }
 
-impl fmt::Display for RawSocket {
+impl Display for RawSocket {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Name: {}, host/port: {}:{}", self.name, "localhost",self.port)
     }

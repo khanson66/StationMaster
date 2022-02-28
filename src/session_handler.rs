@@ -1,9 +1,5 @@
 use crate::sessions::raw_socket::RawSocket;
 use crate::SESSION;
-use std::fmt;
-use std::fs::OpenOptions;
-use std::ops::Deref;
-use std::thread::current;
 
 pub(crate) struct SessionHandler {
     sessions: Vec<SessionTypes>,
@@ -83,7 +79,7 @@ impl SessionHandler {
                                 Option::from(self.sessions.remove(i));
 
                             match &self.active_session{
-                                Some(T) => {
+                                Some(_t) => {
                                     let old_active_session =
                                         std::mem::replace(&mut self.active_session, temp);
 
