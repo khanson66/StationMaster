@@ -50,22 +50,22 @@ fn main() {
 
         match command.as_str() {
             "help" => {
-                cmd::help();
+                if args.is_empty(){cmd::help();}
+                else {cmd::help_extension(args)}
             },
             "exit" =>{
+                println!("Good Bye");
                 exit(0);
             },
             "ls" => {
               handler.list_sessions();
             },
             "create" =>{
-
-                //maybe put this elsewhere
-                //it separated with the database system currently, maybe we can incorporate them.
                 cmd::create(&mut handler, args);
             },
             "drop" =>{
-                todo!();
+                println!("Dropping a active session");
+                cmd::drop(&mut handler, args); 
             },
             // "test" =>{
             //   test_command(args);

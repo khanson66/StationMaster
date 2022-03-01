@@ -57,6 +57,7 @@ impl SessionHandler {
                 self.sessions
                     .push(SessionTypes::RawSocket(RawSocket::new(hostname, port)));
                 true
+                
             }
             _ => {
                 println!("{} DOES NOT EXIST AS A SESSION TYPE", session);

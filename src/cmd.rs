@@ -9,9 +9,15 @@ pub fn help() {
     StationMaster -- Simple program to deploy and manage remote shells
     
     USAGE:
-        StationMaster[EXE] [OPTIONS]
+        [Command] <Arguments>
     
     OPTIONS:
+        help    --- Obtain Help message
+        exit    --- exit application safely 
+        ls      --- list all active sessions
+        create  --- create an new session
+        drop    --- drop an active session
+        cmd     --- send command to an active session
         
     ",r"
     _____ _        _   _             __  __           _            
@@ -22,42 +28,34 @@ pub fn help() {
   |_____/ \__\__,_|\__|_|\___/|_| |_|_|  |_|\__,_|___/\__\___|_|                                                                    
  ")
 }
+pub fn help_extension(args: Vec<String>){
+    let create_usage = "USAGE:
+    create <OPTIONS> <name> <port>
 
-pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>) {
+    OPTIONS:
+    nc, netcat   Utilize a netcat shell";
+
+    match args[0].as_str() {
+        "nc" | "netcat" => {println!("{}",create_usage)}, 
+        "create" => {println!("{}",create_usage)}, 
+        _ => {println!(" please Specific what you need help with.")}
+    } 
+}
+pub(crate) fn create(session_handler: &mut SessionHandler, args:Vec<String>) {
     // let sessionType = args.pop();
     let create_help  = "USAGE:
-        create <OPTIONS>
+        create <OPTIONS> <name> <port>
     
     OPTIONS:
-        -nc, --netcat   Utilize a netcat shell";
+        nc, netcat   Utilize a netcat shell";
 
     //println!("{}",args[args.len()-1]);
     if args.is_empty(){
         println!("{}",create_help);
     } else {
     match args[0].to_lowercase().as_str(){
-        // "-s" | "-ssh" => {
-        //     //println!("you are chosing ssh");
-        //     let ssh_usage = "USAGE:
-        //     create -ssh -h <hostname> -p <port>";
-        //     let mut hostname : String = "default".to_string(); 
-        //     let mut port: i32 = 9090;
-        //     //println!("{}",args.len());
-        //     if args.len()< 3 {println!("{}", ssh_usage)}
-        //     else if args[2].is_empty() | args[4].is_empty(){
-        //         println!("{}", ssh_usage)
-        //     }else{
-        //         if args[1]=="-h"{
-        //             hostname = args[2].to_lowercase();
-        //         }else {println!("{}", ssh_usage)}
-        //         if args[3]=="-p"{
-        //             port = args[4].parse::<i32>().unwrap();
-        //         }else{println!("{}", ssh_usage)}
-        //     }
-        //     println!("hostname: {} & port: {}", hostname, port);
-        //     // TODO more input validation for insufficient inputs. 
-        // },
-        "-nc" | "-netcat" => {
+      
+        "nc" | "netcat" => {
             println!("you are chosing netcat");
             let netcat_usage = "USAGE:
             create -netcat <name> <port>";
@@ -95,5 +93,9 @@ pub(crate) fn create(session_handler: &mut SessionHandler, mut args:Vec<String>)
 
 //TODO: Add the ability to select specific session when multiple are coming in
 pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
-    todo!()
+    todo!();
+}
+
+pub(crate) fn drop(Session_handler: &mut SessionHandler, args:Vec<String>){
+    todo!();
 }
