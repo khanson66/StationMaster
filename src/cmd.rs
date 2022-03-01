@@ -18,6 +18,7 @@ pub fn help() {
         create  --- create an new session
         drop    --- drop an active session
         cmd     --- send command to an active session
+        clear   --- clear Screen 
         
     ",r"
     _____ _        _   _             __  __           _            

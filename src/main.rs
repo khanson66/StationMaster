@@ -6,7 +6,7 @@ use crate::sessions::SESSION;
 use std::io::Write;
 use std::process::exit;
 use crate::session_handler::SessionHandler;
-//use std::collections::HashMap;
+use clearscreen;
 
 fn prompt(name:&str) -> (String, Vec<String>) {
     let mut line = String::new();
@@ -67,9 +67,9 @@ fn main() {
                 println!("Dropping a active session");
                 cmd::drop(&mut handler, args); 
             },
-            // "test" =>{
-            //   test_command(args);
-            // },
+            "clear" =>{
+              clearscreen::clear().unwrap();
+            },
             _ =>{
                 println!("There is no such command");
             }
