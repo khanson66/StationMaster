@@ -95,15 +95,58 @@ pub(crate) fn create(session_handler: &mut SessionHandler, args:Vec<String>) {
 
 //TODO: Add the ability to select specific session when multiple are coming in
 pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
-    todo!();
+    println!("you are sellecting active session");
 }
 
 pub(crate) fn cmd(session_handler: &mut SessionHandler, args:Vec<String>){
-    println!("you are sending command to the active session");
+    let cmd_usage = 
+    "
+    USAGE:
+        cmd <argmument>
+    
+    Argument -- commands you are trying to send to the active session. 
+    ";
+    if args.is_empty(){
+        println!("{}",cmd_usage);
+    }
+    else{   
+    let mut commandString : String =  String::from("");  
+    for items in args{
+        commandString.push_str(items.as_str())
+    }
+    println!("you are sending \"{}\" to the active session",commandString);
+    session_handler.send_command(commandString);}   
 }
-pub(crate) fn drop(Session_handler: &mut SessionHandler, args:Vec<String>){
-    println!("you are dropping an active session");
+pub(crate) fn drop(session_handler: &mut SessionHandler, args:Vec<String>){
+    let activate_usage = 
+    "
+    USAGE:
+        drop <name>
+    
+    name -- name of the sessions that you are trying to drop. 
+    ";
+    let mut sessionname :String = String::from("");
+    if args.is_empty(){
+        println!("{}",activate_usage);
+    }else{sessionname = args[0].clone();}
+    
+    println!("you are dropping {}", sessionname); 
+    session_handler.drop(sessionname);
 }
-pub(crate) fn activate(Session_handler: &mut SessionHandler, args:Vec<String>){
-    println!("you are activating a stale session");
+
+pub(crate) fn activate(session_handler: &mut SessionHandler, args:Vec<String>){
+    let activate_usage = 
+    "
+    USAGE:
+        activate <name>
+    
+    name -- name of the sessions that you are trying to activate. 
+    ";
+    let mut sessionname :String = String::from("");
+    if args.is_empty(){
+        println!("{}",activate_usage);
+    }else{sessionname = args[0].clone();}
+    
+    println!("you are activating {}", sessionname);
+    session_handler.set_active_session(sessionname);
 }
