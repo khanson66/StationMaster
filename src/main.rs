@@ -70,6 +70,12 @@ fn main() {
             "clear" =>{
               clearscreen::clear().unwrap();
             },
+            "cmd" =>{
+                cmd::cmd(&mut handler, args);
+            },
+            "activate" =>{
+                cmd::activate(&mut handler, args)
+            },
             _ =>{
                 println!("There is no such command");
             }

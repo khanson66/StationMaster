@@ -12,13 +12,14 @@ pub fn help() {
         [Command] <Arguments>
     
     OPTIONS:
-        help    --- Obtain Help message
-        exit    --- exit application safely 
-        ls      --- list all active sessions
-        create  --- create an new session
-        drop    --- drop an active session
-        cmd     --- send command to an active session
-        clear   --- clear Screen 
+        help      --- Obtain Help message
+        exit      --- exit application safely 
+        ls        --- list all active sessions
+        create    --- create an new session
+        drop      --- drop an active session
+        cmd       --- send command to an active session
+        clear     --- clear Screen 
+        activate  --- set a session as an active session.
         
     ",r"
     _____ _        _   _             __  __           _            
@@ -97,6 +98,12 @@ pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
     todo!();
 }
 
+pub(crate) fn cmd(session_handler: &mut SessionHandler, args:Vec<String>){
+    println!("you are sending command to the active session");
+}
 pub(crate) fn drop(Session_handler: &mut SessionHandler, args:Vec<String>){
-    todo!();
+    println!("you are dropping an active session");
+}
+pub(crate) fn activate(Session_handler: &mut SessionHandler, args:Vec<String>){
+    println!("you are activating a stale session");
 }
