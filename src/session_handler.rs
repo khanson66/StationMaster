@@ -53,9 +53,10 @@ impl SessionHandler {
                 true
             }
             "netcat" => {
-
+                let mut socket = RawSocket::new(hostname, port);
+                socket.start();
                 self.sessions
-                    .push(SessionTypes::RawSocket(RawSocket::new(hostname, port)));
+                    .push(SessionTypes::RawSocket(socket));
                 true
                 
             }
@@ -87,8 +88,7 @@ impl SessionHandler {
                                     self.sessions.push(old_active_session.unwrap());
                                 }
                                 None => {
-                                    //Place holder incase logic is needed
-                                    todo!()
+                                    self.active_session = temp;
                                 }
 
                             }
