@@ -76,7 +76,10 @@ fn main() {
             "activate" =>{
                 cmd::activate(&mut handler, args)
             },
-            _ =>{
+            // "testing" =>{
+            //     cmd::name_parsing(&mut handler);
+            // },
+            // _ =>{
                 println!("There is no such command");
             }
         }

@@ -2,6 +2,7 @@
 // #![allow(dead_code)]
 use crate::SessionHandler;
 mod utility;
+use regex::Regex;
 
 
 pub fn help() {
@@ -98,6 +99,7 @@ pub(crate) fn select(session_handler: &mut SessionHandler, args:Vec<String>){
     println!("you are sellecting active session");
 }
 
+
 pub(crate) fn cmd(session_handler: &mut SessionHandler, args:Vec<String>){
     let cmd_usage = 
     "
@@ -150,3 +152,18 @@ pub(crate) fn activate(session_handler: &mut SessionHandler, args:Vec<String>){
     println!("you are activating {}", sessionname);
     session_handler.set_active_session(sessionname);
 }
+
+// pub(crate) fn name_parsing(session_handler: &mut SessionHandler){
+//     println!("hello testing name parsing");
+//     let mut output: Vec<String> = vec![];
+//     let mut vector = session_handler.list_sessions_output();   
+//     let re = Regex::new(r": (?<name>[a-zA-Z]+),").unwrap();
+//     let length = vector.len() as u32;
+//     for n in 0..length{
+//         if re.is_match(vector[n as usize].as_str()){
+//             re.replace_all(vector[n as usize].as_mut_str(), "$name");
+//             //println!("{}",names);
+//         }
+//     }
+//     println!("{}",vector[0])
+// }
