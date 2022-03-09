@@ -79,7 +79,7 @@ fn main() {
             // "testing" =>{
             //     cmd::name_parsing(&mut handler);
             // },
-            // _ =>{
+             _ =>{
                 println!("There is no such command");
             }
         }
