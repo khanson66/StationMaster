@@ -67,6 +67,7 @@ impl Display for RawSocket {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Name: {}, host/port: {}:{}", self.name, "localhost",self.port)
     }
+    
 }
 
 impl SESSION for RawSocket {

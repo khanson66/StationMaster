@@ -44,24 +44,17 @@ impl SessionHandler {
             }
         }
     }
-
-    pub fn list_sessions_output(&self) ->Vec<String> {
+    
+    pub fn get_used_names(&self) ->Vec<String> {
         let mut names : Vec<String> = vec![];
-        if self.sessions.len() <= 0 && self.active_session.is_none() {
-            println!("There are no active sessions");
-        } else {
-            if self.active_session.is_some(){
-                match self.active_session.as_ref().unwrap(){
-                    SessionTypes::RawSocket(s) => names.push(s.to_string()),
-                };
-            }
-            for i in &self.sessions {
-                match i {
-                    SessionTypes::RawSocket(s) => names.push(s.to_string()),
-                    _ => println!("WTF happened")
+        for i in &self.sessions {
+            match i {
+                SessionTypes::RawSocket(s) => {
+                    names.push(s.get_name());
                 }
             }
-        }return names
+        }
+        return names
     }
 
     //TODO: Create a method to create new session return bool
@@ -73,7 +66,7 @@ impl SessionHandler {
             }
             "netcat" => {
                 let mut socket = RawSocket::new(hostname, port);
-                //socket.start();
+                socket.start();
                 self.sessions
                     .push(SessionTypes::RawSocket(socket));
                 true

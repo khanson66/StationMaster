@@ -2,7 +2,7 @@
 // #![allow(dead_code)]
 use crate::SessionHandler;
 mod utility;
-use regex::Regex;
+
 
 
 pub fn help() {
@@ -65,17 +65,6 @@ pub(crate) fn create(session_handler: &mut SessionHandler, args:Vec<String>) {
             let mut name : String = "Netcat_default".to_string(); 
             let mut port: u32 = 4444;
             
-            // if args.len()< 3 {println!("{}", netcat_usage)}
-            // else if args[2].is_empty() | args[4].is_empty(){
-            //     println!("{}", netcat_usage)
-            // }else{
-            //     if args[1]=="-h"{
-            //         name = args[2].to_lowercase().to_string();
-            //     }else {println!("{}", netcat_usage)}
-            //     if args[3]=="-p"{
-            //         port = args[4].parse::<u32>().unwrap();
-            //     }else{println!("{}", netcat_usage)}
-            // }
             if args.len() < 3{ 
                 println!("{}",netcat_usage);
             }else{ 
@@ -84,7 +73,9 @@ pub(crate) fn create(session_handler: &mut SessionHandler, args:Vec<String>) {
             }
             //println!("name: {} & port: {}", name, port);
             let used_port = utility::get_used_port();
+            let used_name = session_handler.get_used_names();
             if used_port.contains(&port){println!("please use a different port, port is being utilized")}
+            else if used_name.contains(&name){println!("please use a different name, name is being utilized")}
             else {
             let _out = session_handler.create("netcat".to_string(),name, port);
             }
@@ -153,17 +144,3 @@ pub(crate) fn activate(session_handler: &mut SessionHandler, args:Vec<String>){
     session_handler.set_active_session(sessionname);
 }
 
-// pub(crate) fn name_parsing(session_handler: &mut SessionHandler){
-//     println!("hello testing name parsing");
-//     let mut output: Vec<String> = vec![];
-//     let mut vector = session_handler.list_sessions_output();   
-//     let re = Regex::new(r": (?<name>[a-zA-Z]+),").unwrap();
-//     let length = vector.len() as u32;
-//     for n in 0..length{
-//         if re.is_match(vector[n as usize].as_str()){
-//             re.replace_all(vector[n as usize].as_mut_str(), "$name");
-//             //println!("{}",names);
-//         }
-//     }
-//     println!("{}",vector[0])
-// }
