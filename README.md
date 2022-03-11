@@ -38,9 +38,9 @@ Station master is a presitance tool in which establish and manages reverse shell
 - [x] Make a CLI interface with meta Command
 - [x] Session Objects?
   - [x] netcat session
-  - [] ssh session
+  - [ ] ssh session
 
 #### Stage 2
-- [] Handle multiple include on selected ports for one session type
-- [] More advance session objects like rot-13 and xor
-- [] ?Web UI?
+- [ ] Handle multiple include on selected ports for one session type
+- [ ] More advance session objects like rot-13 and xor
+- [ ] ?Web UI?
