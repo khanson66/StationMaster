@@ -25,15 +25,6 @@ fn prompt(name:&str) -> (String, Vec<String>) {
 }
 
 
-// fn test_command(args:Vec<String>){
-//     if args.is_empty() {
-//         println!("NO ARGS PROVIDED")
-//     }else{
-//         println!("{}",args.join(","));
-//     }
-
-// }
-
 fn main() {
     //TODO: Implement Session Handler Object This object that will get passed to functions
 
