@@ -1,15 +1,19 @@
+# StationMaster
+```
     _____ _        _   _             __  __           _            
    / ____| |      | | (_)           |  \/  |         | |           
   | (___ | |_ __ _| |_ _  ___  _ __ | \  / | __ _ ___| |_ ___ _ __ 
    \___ \| __/ _` | __| |/ _ \| '_ \| |\/| |/ _` / __| __/ _ \ '__|
    ____) | || (_| | |_| | (_) | | | | |  | | (_| \__ \ ||  __/ |   
   |_____/ \__\__,_|\__|_|\___/|_| |_|_|  |_|\__,_|___/\__\___|_|    
+```
 #### Reverse Shell Session Manager
 
 ### project objective 
 Station master is a presitance tool in which establish and manages reverse shells. The best part is that it is fully in rust! 
 
 ### Visual
+```
 +----------+  +----------+  +----------+
 |Computer 1|  |Computer 2|  |Computer 3|
 +----+-----+  +----+-----+  +-----+----+
@@ -27,7 +31,7 @@ Station master is a presitance tool in which establish and manages reverse shell
  |          |
  |          |
  +----------+
-
+```
 
 ### Stages
 #### Stage 1
