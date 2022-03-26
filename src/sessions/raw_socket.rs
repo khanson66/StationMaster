@@ -61,22 +61,7 @@ impl RawSocket {
                     Err(e) => { /* connection failed */ }
                 }
             }
-            //let _t =
-            //self.stream = Option::from(stream);
         });
-
-
-        /*
-        //TODO: Split this off eventually to separate function to handle multiple incoming streams
-        let (mut stream, _) = listener.accept()?;
-        println!("Connection received on {}, via NetCat from {}",port, stream.peer_addr().unwrap());
-
-        let _t = RawSocket::pipe_thread(stream.try_clone().unwrap(), std::io::stdout());
-        self.stream = Option::from(stream);
-
-        return Ok(());
-        
-         */
     }
 
     //handle the web connection??
