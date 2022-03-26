@@ -114,15 +114,36 @@ impl SessionHandler {
     }
 
     pub(crate) fn send_command(&self, cmd: String){
-        match &self.active_session.as_ref().unwrap() {
-            SessionTypes::RawSocket(s) => {
-                s.send_command(cmd);
+
+        match &self.active_session {
+            Some(session) => {
+                match session {
+                    SessionTypes::RawSocket(s) => {
+                        s.send_command(cmd);
+                    }
+                }
+            }
+
+            None => {
+                println!("[!] There is no active session. Please set one as active to use this command")
             }
         }
     }
 
     pub(crate) fn drop(&self, name: String){
-        todo!();
+        match &self.active_session {
+            Some(session) => {
+                match session {
+                    SessionTypes::RawSocket(s) => {
+                        s.close()
+                    }
+                }
+            }
+
+            None => {
+                println!("[!] There is no active session. Please set one as active to use this command")
+            }
+        }
     }
 
 }
