@@ -65,7 +65,7 @@ impl SessionHandler {
                 true
             }
             "netcat" => {
-                let mut socket = RawSocket::new(hostname, port);
+                let mut socket = RawSocket::new(hostname, port, 3);
                 socket.start();
                 self.sessions
                     .push(SessionTypes::RawSocket(socket));

@@ -7,24 +7,53 @@ use std::io::Write;
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
+use std::thread::JoinHandle;
+use std::time::{SystemTime, UNIX_EPOCH};
 
-
+// different types of rotations
+pub enum Rotation{
+    FIFO,
+    LIFO,
+}
+/*
+RawSocket:
+    port: the port to open on the host machine to accept connections
+    name: the name of the connection, Unique identifier
+    description: optional quick description of function
+    max_session_count: How many concurrent session are allowed to be connected
+    connected_streams: vector of connected streams and relevant metadata
+*/
 #[derive(Debug)]
 pub struct RawSocket {
     port:u32,
     name: String,
     description:String,
-    stream: Arc<Mutex<Option<TcpStream>>>
+    max_session_count: usize,
+    connected_streams: Arc<Mutex<Vec<RawStream>>>
 }
+/*
+RawStream:
+    stream: The TCPStream object
+    target_addr: IP:PORT of connected session
+    recv_time: epoch time that the session was retrieved
+    output_handle: Handle to thread that is reading the stream for incoming data
+*/
+struct RawStream{
+    stream: TcpStream,
+    target_addr: String,
+    recv_time: SystemTime,
+    output_handle: JoinHandle<()>,
+} 
 
 impl RawSocket {
 
-    pub(crate) fn new(name: String, port: u32) -> Self {
+    pub(crate) fn new(name: String, port: u32, count: usize) -> Self {
         RawSocket {
             port,
             name,
+            max_session_count:count,
             description: "Raw Socket connection".to_string(),
-            stream: Arc::new(Mutex::new(None)),
+            connected_streams: Arc::new(Mutex::new(Vec::new())),
         }
     }
 
@@ -34,11 +63,10 @@ impl RawSocket {
     fn start_listener(&mut self, port:u32) {
         let listener = std::net::TcpListener::bind(format!("{}:{}", "0.0.0.0", port)).unwrap();
         println!("Started listener on port {}", port);
-        //return listener;
 
-        let curr_stream = Arc::clone(&self.stream);
-        let handle = std::thread::spawn(move || {
-            //let (mut stream, _) = listener.accept()?;
+        let max = self.max_session_count;
+        let curr_stream = Arc::clone(&self.connected_streams);
+        let _handle = std::thread::spawn(move || {
             for incoming_stream  in listener.incoming(){
                 match incoming_stream {
                     Ok(incoming_stream) => {
@@ -47,14 +75,18 @@ impl RawSocket {
                                  incoming_stream.peer_addr().unwrap());
 
                         let mut shared_stream = curr_stream.lock().unwrap();
-                        match *shared_stream {
-                            None => {
-                                RawSocket::pipe_thread(incoming_stream.try_clone().unwrap(), std::io::stdout());
-                                *shared_stream = Option::from(incoming_stream);
-                            }
-                            Some(_) => {
-                                println!("[!] Dropping Connection: Queue Full")
-                            }
+                        if *shared_stream.len() < max{
+                            let target_output = RawSocket::pipe_thread(
+                                incoming_stream.try_clone().unwrap(),
+                                std::io::stdout());
+                            *shared_stream.push(RawStream{
+                                stream: incoming_stream,
+                                target_addr: incoming_stream.peer_addr().unwrap().to_string(),
+                                recv_time: SystemTime::now(),
+                                output_handle: target_output
+                            });
+                        }else{
+                            println!("[!] Dropping Connection: Queue Full")
                         }
 
                     }
@@ -101,7 +133,7 @@ impl SESSION for RawSocket {
 
     //TODO: CLEANER CLOSE
     fn close(&self) {
-        let mut stream =  self.stream.lock().unwrap();
+        let mut stream =  self.connected_streams.lock().unwrap();
         match *stream {
             None => {
                 println!("No sessions currently connected to drop");
@@ -117,7 +149,7 @@ impl SESSION for RawSocket {
 
     fn send_command(&self,cmd: String){
         let cmd = cmd.clone() + "\n";
-        let mut stream_opt =  self.stream.lock().unwrap();
+        let mut stream_opt =  self.connected_streams.lock().unwrap();
         match *stream_opt {
             None => {
                 println!("No sessions currently connected");
