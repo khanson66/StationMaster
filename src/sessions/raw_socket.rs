@@ -1,20 +1,34 @@
 // #![allow(unused_imports)]
 // #![allow(dead_code)]
 use std::{fmt, io};
-use crate::sessions::SESSION;
+use crate::sessions::{Rotation, SESSION};
 use std::fmt::Display;
 use std::io::Write;
 use std::net::{Shutdown, TcpListener, TcpStream};
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-// different types of rotations
-pub enum Rotation{
-    FIFO,
-    LIFO,
-}
+/*
+RAW_SOCKET
+
+TODO:
+    * Add Validation for incoming sessions IP addresses
+    * Find a way to drop individual sessions vs all session vs close out listener
+
+Internal logic sanity out line.
+setting up socket:
+    create listener on port that writes incoming streams to vector until it is filled then based on
+    the rotation rules drop the appropriate session.
+Sending commands:
+    use the first session in the vector to send commands. print output to stdout. Future idea, write
+    it to log file.
+Close:
+    drop all sessions and handles and release the listeners.
+
+*/
+
 /*
 RawSocket:
     port: the port to open on the host machine to accept connections
@@ -38,12 +52,13 @@ RawStream:
     recv_time: epoch time that the session was retrieved
     output_handle: Handle to thread that is reading the stream for incoming data
 */
+#[derive(Debug)]
 struct RawStream{
     stream: TcpStream,
     target_addr: String,
     recv_time: SystemTime,
     output_handle: JoinHandle<()>,
-} 
+}
 
 impl RawSocket {
 
@@ -60,7 +75,7 @@ impl RawSocket {
 
     //Starts listening to port selected
     //TODO: move to centralized checking model??
-    fn start_listener(&mut self, port:u32) {
+    fn start_listener(&mut self, port:u32, rotation: Rotation) {
         let listener = std::net::TcpListener::bind(format!("{}:{}", "0.0.0.0", port)).unwrap();
         println!("Started listener on port {}", port);
 
@@ -70,24 +85,42 @@ impl RawSocket {
             for incoming_stream  in listener.incoming(){
                 match incoming_stream {
                     Ok(incoming_stream) => {
+                        let address_info = incoming_stream.peer_addr().unwrap().to_string();
                         println!("[!] Connection received on {}, via NetCat from {}",
                                  port,
-                                 incoming_stream.peer_addr().unwrap());
+                                 address_info);
 
                         let mut shared_stream = curr_stream.lock().unwrap();
-                        if *shared_stream.len() < max{
-                            let target_output = RawSocket::pipe_thread(
-                                incoming_stream.try_clone().unwrap(),
-                                std::io::stdout());
-                            *shared_stream.push(RawStream{
-                                stream: incoming_stream,
-                                target_addr: incoming_stream.peer_addr().unwrap().to_string(),
-                                recv_time: SystemTime::now(),
-                                output_handle: target_output
-                            });
+                        let vec_len = shared_stream.deref().len();
+                        if vec_len <= max {
+                            //TODO: Clean this up
+                            println!("[!] NOTICE: Queue Not Full No Rotation");
                         }else{
-                            println!("[!] Dropping Connection: Queue Full")
+                            match rotation {
+                                Rotation::FIFO => {
+                                    shared_stream.deref_mut().remove(0);
+                                }
+                                Rotation::LIFO => {
+                                    shared_stream.deref_mut().remove(vec_len - 1);
+                                }
+                                Rotation::HOLD => {
+                                    //incoming_stream.shutdown(Shutdown::Both);
+                                    println!("[!] NOTICE: Dropping incoming session queue full");
+                                    continue;
+                                }
+                            }
                         }
+                        //create thread to write incoming data to stream to STDOUT
+                        let target_output = RawSocket::pipe_thread(
+                            incoming_stream.try_clone().unwrap(),
+                            std::io::stdout());
+                        //Store the thread handle and the TCPStream in the vector
+                        shared_stream.deref_mut().push(RawStream{
+                            stream: incoming_stream,
+                            target_addr: address_info,
+                            recv_time: SystemTime::now(),
+                            output_handle: target_output
+                        });
 
                     }
                     Err(e) => { /* connection failed */ }
@@ -127,38 +160,33 @@ impl Display for RawSocket {
 
 impl SESSION for RawSocket {
     fn start(&mut self) {
-        self.start_listener(self.port);
+        //figure out how to pass in rotations
+        self.start_listener(self.port, Rotation::FIFO);
 
     }
 
     //TODO: CLEANER CLOSE
     fn close(&self) {
-        let mut stream =  self.connected_streams.lock().unwrap();
-        match *stream {
-            None => {
-                println!("No sessions currently connected to drop");
-            }
-            Some(ref mut s) => {
-                println!("[!] Dropping Current Active Session");
-                s.shutdown(Shutdown::Both).expect("shutdown call failed");
-                *stream = Option::None;
-                println!("[!] Successfully Closed");
-            }
+        let mut raw_sessions = self.connected_streams.lock().unwrap();
+        for session in raw_sessions.deref_mut().iter_mut(){
+            //this should kill the thread and shutdown the TCP connections
+            session.stream.shutdown(Shutdown::Both).expect("[!] Error: Failed to close Stream");
         }
+        //drops all values in the vector. TODO: combine with loop above
+        raw_sessions.deref_mut().clear();
+
     }
 
     fn send_command(&self,cmd: String){
-        let cmd = cmd.clone() + "\n";
-        let mut stream_opt =  self.connected_streams.lock().unwrap();
-        match *stream_opt {
+        let mut raw_sessions = self.connected_streams.lock().unwrap();
+        match raw_sessions.deref_mut().first_mut(){
             None => {
-                println!("No sessions currently connected");
+                println!("[!] Warning: There are no sessions available to send the command to.")
             }
-            Some(ref mut s) => {
-                s.write(cmd.as_bytes()).expect("Failed to send TCP.");
+            Some(raw_stream) => {
+                raw_stream.stream.write(cmd.as_bytes()).expect("[!] Error: Could not write to socket");
             }
         }
-
     }
 
     fn get_name(&self) -> String {
