@@ -163,9 +163,9 @@ impl Display for RawSocket {
 }
 
 impl SESSION for RawSocket {
-    fn start(&mut self) {
+    fn start(&mut self, rotate: Rotation) {
         //figure out how to pass in rotations
-        self.start_listener(self.port, Rotation::FIFO);
+        self.start_listener(self.port, rotate);
 
     }
 
@@ -183,6 +183,10 @@ impl SESSION for RawSocket {
 
     }
 
+    fn drop(&self) {
+        todo!()
+    }
+
     fn send_command(&self,cmd: String){
         let mut raw_sessions = self.connected_streams.lock().unwrap();
         match raw_sessions.deref_mut().first_mut(){
@@ -197,5 +201,9 @@ impl SESSION for RawSocket {
 
     fn get_name(&self) -> String {
         return self.name.clone();
+    }
+
+    fn get_info(&self) {
+        todo!()
     }
 }

@@ -1,10 +1,12 @@
 pub(crate) mod raw_socket;
 
 pub trait SESSION {
-    fn start(&mut self);
+    fn start(&mut self, rotate: Rotation);
     fn close(&self);
+    fn drop(&self);
     fn send_command(&self, cmd:String);
     fn get_name(&self) -> String;
+    fn get_info(&self);
 }
 
 // different types of rotations
