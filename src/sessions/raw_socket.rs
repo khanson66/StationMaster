@@ -82,7 +82,7 @@ impl RawSocket {
         let max = self.max_session_count;
         let curr_stream = Arc::clone(&self.connected_streams);
         let _handle = std::thread::spawn(move || {
-            for incoming_stream  in listener.incoming(){
+            for incoming_stream in listener.incoming(){
                 match incoming_stream {
                     Ok(incoming_stream) => {
                         let address_info = incoming_stream.peer_addr().unwrap().to_string();
@@ -98,13 +98,17 @@ impl RawSocket {
                         }else{
                             match rotation {
                                 Rotation::FIFO => {
-                                    shared_stream.deref_mut().remove(0);
+                                    println!("[!] FIFO:Dropping First Session");
+                                    let rm_sess = shared_stream.deref_mut().remove(0);
+                                    rm_sess.stream.shutdown(Shutdown::Both);
                                 }
                                 Rotation::LIFO => {
-                                    shared_stream.deref_mut().remove(vec_len - 1);
+                                    println!("[!] FIFO:Dropping First Session");
+                                    let rm_sess = shared_stream.deref_mut().remove(vec_len - 1);
+                                    rm_sess.stream.shutdown(Shutdown::Both);
                                 }
                                 Rotation::HOLD => {
-                                    //incoming_stream.shutdown(Shutdown::Both);
+                                    incoming_stream.shutdown(Shutdown::Both);
                                     println!("[!] NOTICE: Dropping incoming session queue full");
                                     continue;
                                 }
@@ -171,6 +175,8 @@ impl SESSION for RawSocket {
         for session in raw_sessions.deref_mut().iter_mut(){
             //this should kill the thread and shutdown the TCP connections
             session.stream.shutdown(Shutdown::Both).expect("[!] Error: Failed to close Stream");
+            //as a precaution dropping thread here. Might cause issue
+            //session.output_handle.join();
         }
         //drops all values in the vector. TODO: combine with loop above
         raw_sessions.deref_mut().clear();
