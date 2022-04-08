@@ -169,8 +169,8 @@ impl SESSION for RawSocket {
 
     }
 
-    //TODO: CLEANER CLOSE
-    fn close(&self) {
+    //TODO: CLEANER CLOSE // For dropping a connection
+    fn drop(&self) {
         let mut raw_sessions = self.connected_streams.lock().unwrap();
         for session in raw_sessions.deref_mut().iter_mut(){
             //this should kill the thread and shutdown the TCP connections
@@ -183,7 +183,7 @@ impl SESSION for RawSocket {
 
     }
 
-    fn drop(&self) {
+    fn close(&self) {
         todo!()
     }
 

@@ -1,5 +1,5 @@
 use crate::sessions::raw_socket::RawSocket;
-use crate::SESSION;
+use crate::sessions::{Rotation, SESSION};
 
 pub(crate) struct SessionHandler {
     sessions: Vec<SessionTypes>,
@@ -66,7 +66,8 @@ impl SessionHandler {
             }
             "netcat" => {
                 let mut socket = RawSocket::new(hostname, port, 3);
-                socket.start();
+                // place holder until we have the logic set up
+                socket.start(Rotation::HOLD);
                 self.sessions
                     .push(SessionTypes::RawSocket(socket));
                 true
@@ -81,7 +82,7 @@ impl SessionHandler {
 
     pub fn set_active_session(&mut self, name: String) {
         if self.sessions.len() <= 0 && self.active_session.is_none() {
-            println!("There are no active sessions");
+            println!("There are no active connection");
         } else {
             for i in 0..self.sessions.len() {
                 let si = self.sessions.get(i).unwrap();
@@ -109,7 +110,7 @@ impl SessionHandler {
                     }
                 }
             }
-            println!("[!] Cant set active session because one does not exist");
+            println!("[!] Cant set active connection because one does not exist");
         }
     }
 
@@ -125,7 +126,7 @@ impl SessionHandler {
             }
 
             None => {
-                println!("[!] There is no active session. Please set one as active to use this command")
+                println!("[!] There is no active connection. Please set one as active to use this command")
             }
         }
     }
@@ -135,7 +136,7 @@ impl SessionHandler {
             Some(session) => {
                 match session {
                     SessionTypes::RawSocket(s) => {
-                        s.close()
+                        s.drop()
                     }
                 }
             }
@@ -146,4 +147,10 @@ impl SessionHandler {
         }
     }
 
+    pub(crate) fn close(&self){
+        let used_name = self.get_used_names();
+        for names in used_name{
+            self.drop(names)
+        } 
+    } 
 }

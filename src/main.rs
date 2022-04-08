@@ -3,10 +3,11 @@ mod cmd;
 mod session_handler;
 use crate::sessions::SESSION;
 
-use std::io::Write;
+use std::io::{stdin,Write,stdout};
 use std::process::exit;
 use crate::session_handler::SessionHandler;
 use clearscreen;
+use regex::Regex;
 
 fn prompt(name:&str) -> (String, Vec<String>) {
     let mut line = String::new();
@@ -21,7 +22,7 @@ fn prompt(name:&str) -> (String, Vec<String>) {
     let command = parts.next().unwrap().to_string();
     let args = parts.map(|s| s.to_string()).collect();
 
-    return (command, args )
+    return (command, args)
 }
 
 
@@ -55,8 +56,27 @@ fn main() {
                 cmd::create(&mut handler, args);
             },
             "drop" =>{
-                println!("Dropping a active session");
+                println!("Dropping an active Connection");
                 cmd::drop(&mut handler, args); 
+            },
+            "close" =>{
+                println!("you are about to close all of your connection and shutdown the programm,");
+                print!("are you sure [y/n]? ");
+                let mut ans = String::new();
+                stdout().flush().unwrap();
+                match stdin().read_line(&mut ans){
+                    Ok(name) => {
+                        let ans = ans.trim();
+                        if Regex::new(r"^[yY]").unwrap().is_match(ans){
+                            cmd::close(&mut handler);
+                            println!("Good Bye");
+                            exit(0);
+                        }else{
+                            println!("your close command was not executed.");
+                        }
+                    },
+                    Err(error) => {println!("please try again")},
+                }
             },
             "clear" =>{
               clearscreen::clear().unwrap();

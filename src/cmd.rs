@@ -13,14 +13,15 @@ pub fn help() {
         [Command] <Arguments>
     
     OPTIONS:
-        help      --- Obtain Help message
-        exit      --- exit application safely 
-        ls        --- list all active sessions
-        create    --- create an new session
-        drop      --- drop an active session
-        cmd       --- send command to an active session
-        clear     --- clear Screen 
-        activate  --- set a session as an active session.
+        help      --- Obtain Help message.
+        exit      --- exit application safely. 
+        ls        --- list all active connections.
+        create    --- create an new connection.
+        drop      --- drop an active connection.
+        close     --- drop all connection and shutdown program.
+        cmd       --- send command to an active connection.
+        clear     --- clear Screen.
+        activate  --- set a connection as an active connection.
         
     ", r"
     _____ _        _   _             __  __           _            
@@ -96,7 +97,7 @@ pub(crate) fn cmd(session_handler: &mut SessionHandler, args: Vec<String>) {
     USAGE:
         cmd <argmument>
     
-    Argument -- commands you are trying to send to the active session. 
+    Argument -- commands you are trying to send to the active connection. 
     ";
     if args.is_empty() {
         println!("{}", cmd_usage);
@@ -114,7 +115,7 @@ pub(crate) fn drop(session_handler: &mut SessionHandler, args: Vec<String>) {
     USAGE:
         drop <name>
     
-    name -- name of the sessions that you are trying to drop. 
+    name -- name of the connection that you are trying to drop. 
     ";
     let mut sessionname: String = String::from("");
     if args.is_empty() {
@@ -125,13 +126,18 @@ pub(crate) fn drop(session_handler: &mut SessionHandler, args: Vec<String>) {
     session_handler.drop(sessionname);
 }
 
+//todo: Close - will close the whole session and shutdown exiting 
+pub(crate) fn close(session_handler: &mut SessionHandler){
+    session_handler.close()
+}
+
 pub(crate) fn activate(session_handler: &mut SessionHandler, args: Vec<String>) {
     let activate_usage =
         "
     USAGE:
         activate <name>
     
-    name -- name of the sessions that you are trying to activate. 
+    name -- name of the connection that you are trying to activate. 
     ";
     let mut sessionname: String = String::from("");
     if args.is_empty() {
@@ -141,4 +147,3 @@ pub(crate) fn activate(session_handler: &mut SessionHandler, args: Vec<String>) 
     println!("you are activating {}", sessionname);
     session_handler.set_active_session(sessionname);
 }
-
