@@ -141,8 +141,11 @@ impl RawSocket {
     {
         std::thread::spawn(move || {
             let mut buffer = [0; 1024];
+            w.write("{!!!!!}beforeLoop".as_bytes()).unwrap();
             loop {
+                w.write("{!!!!!}b4read".as_bytes()).unwrap();
                 let len = r.read(&mut buffer).unwrap();
+                w.write("{!!!!!}after_read".as_bytes()).unwrap();
                 if len == 0 {
                     println!("Connection lost");
                     //std::process::exit(0x0100);
@@ -169,6 +172,10 @@ impl SESSION for RawSocket {
 
     }
 
+    fn close(&self) {
+        todo!()
+    }
+
     //TODO: CLEANER CLOSE // For dropping a connection
     fn drop(&self) {
         let mut raw_sessions = self.connected_streams.lock().unwrap();
@@ -183,21 +190,20 @@ impl SESSION for RawSocket {
 
     }
 
-    fn close(&self) {
-        todo!()
-    }
-
     fn send_command(&self,cmd: String){
+        let cmd = cmd.clone() + "\n";
         let mut raw_sessions = self.connected_streams.lock().unwrap();
         match raw_sessions.deref_mut().first_mut(){
             None => {
                 println!("[!] Warning: There are no sessions available to send the command to.")
             }
-            Some(raw_stream) => {
-                raw_stream.stream.write(cmd.as_bytes()).expect("[!] Error: Could not write to socket");
+            Some(mut raw_stream) => {
+                let mut s = raw_stream.stream.try_clone().expect("Error cloning");
+                s.write(cmd.as_bytes()).expect("[!] Error: Could not write to socket");
             }
         }
     }
+
 
     fn get_name(&self) -> String {
         return self.name.clone();
